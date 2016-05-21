@@ -1,0 +1,790 @@
+(* NOTATION AND SETTINGS *)
+
+(* (U,F,Z)'=d (U,F,Z)/d\[Phi]. For aother quantities the ' represents \
+derivative with respect to a rescaled time tresc=Href*t where tresc \
+is dimensionles. All equations below used rescaled dimensionless time \
+variable. *) 
+mystyle = {FontFamily -> "Times", Plain, 
+   FontSize -> 
+    12}; (* default fonts for use in the file *)
+(* Set directory *) 
+SetDirectory[NotebookDirectory[]];
+Clear[\[Phi], a, \[Rho]m, H, ta, 
+  tz, \[Psi], \[Delta]\[Phi]];(* clear previous use of variables *)
+
+(* Definitions *)
+(* Linear perturbations *)
+
+\[Kappa][x_] = 3 (H[x] \[Alpha][x] + \[Psi]'[x]); 
+\[Alpha][x_] = (\[Psi][x] - 
+    F'[\[Phi][x]]/F[\[Phi][x]] \[Delta]\[Phi][x]);
+\[Alpha]d[
+  x_] = -(-\[Psi]'[
+      x] + (F''[\[Phi][x]]/F[\[Phi][x]] - F'[\[Phi][x]]^2/
+       F[\[Phi][x]]^2) \[Phi]'[x] \[Delta]\[Phi][x] + 
+    F'[\[Phi][x]]/
+     F[\[Phi][x]] \[Delta]\[Phi]'[
+      x]); (* differentiate above equation *)
+\[Kappa]d[x_] = 
+ 3 (H'[x] \[Alpha][x] + 
+    H[x] \[Alpha]d[x] + \[Psi]''[
+     x]);(* differentiate the above equation  *)
+\[Delta]\[Mu][
+  x_] = -2 (H[x] \[Kappa][x] + \[Psi][x] k^2/a[x]^2);
+\[Delta]F[x_] = 
+ F'[\[Phi][x]] \[Delta]\[Phi][x]; (* perturbation of F *)
+\[Delta]Fd[
+  x_] = F''[\[Phi][x]] \[Phi]'[x] \[Delta]\[Phi][x] + 
+  F'[\[Phi][x]] \[Delta]\[Phi]'[
+    x];  (* differentiate above equation *)
+\[Delta]Fdd[x_] = 
+ F'''[\[Phi][x]] \[Phi]'[x]^2 \[Delta]\[Phi][x] + 
+  F''[\[Phi][x]] \[Phi]''[x] \[Delta]\[Phi][x] + 
+  F''[\[Phi][x]] \[Phi]'[x] \[Delta]\[Phi]'[x] + 
+  F''[\[Phi][x]] \[Phi]'[x] \[Delta]\[Phi]'[x] + 
+  F'[\[Phi][x]] \[Delta]\[Phi]''[x]; (* differentiate above equation *)
+
+f\[Phi][x_] = F'[\[Phi][x]] 6 (2 H[x]^2 + H'[x]);
+\[Delta]p[x_] = 
+  1/F[\[Phi][x]] (Z[\[Phi][x]] \[Phi]'[x] \[Delta]\[Phi]'[x] + 
+     1/2 (Z'[\[Phi][x]] \[Phi]'[x]^2 + f\[Phi][x] - 
+        2 U'[\[Phi][x]]) \[Delta]\[Phi][x] + \[Delta]Fdd[x] + 
+     2 H[x] \[Delta]Fd[
+       x] + (-H'[x] - 3 H[x]^2 + 2/3 k^2/a[x]^2) \[Delta]F[x] - 
+     Fd[x] \[Alpha]d[
+       x] - (Z[\[Phi][x]] \[Phi]'[x]^2 + 2 Fdd[x] + 
+        2 H[x] Fd[x]) \[Alpha][x] - 2/3 Fd[x] \[Kappa][x]); 
+R[x_] = 6 (2 H[x]^2 + H'[x]);  
+\[Delta]R[x_] = 
+  2 (-\[Kappa]d[x] - 
+     4 H[x] \[Kappa][x] - (-(k^2/a[x]^2) + 3 H'[x]) \[Alpha][x] - 
+     2 k^2/a[x]^2 \[Psi][x]);  
+
+eq\[Psi][x_] = \[Kappa]d[x] + 
+   2 H[x] \[Kappa][x] + (3 H'[x] - k^2/a[x]^2) \[Alpha][x] - 
+   1/2 (\[Delta]\[Mu][x] + 3 \[Delta]p[x]) ;
+eq\[Delta]\[Phi][
+  x_] = \[Delta]\[Phi]''[
+   x] + (3 H[x] + 
+     Z'[\[Phi][x]]/Z[\[Phi][x]] \[Phi]'[x]) \[Delta]\[Phi]'[
+    x] + (k^2/
+     a[x]^2 + (Z''[\[Phi][x]]/Z[\[Phi][x]] - Z'[\[Phi][x]]^2/
+        Z[\[Phi][x]]^2) 1/
+      2 \[Phi]'[x]^2 + (U''[\[Phi][x]]/Z[\[Phi][x]] - (
+       U'[\[Phi][x]] Z'[\[Phi][x]])/Z[\[Phi][x]]^2) - 
+     R[x]/2 (F''[\[Phi][x]]/Z[\[Phi][x]] - (
+        F'[\[Phi][x]] Z'[\[Phi][x]])/Z[\[Phi][x]]^2)) \[Delta]\[Phi][
+    x] - (\[Phi]'[x] \[Alpha]'[
+      x] + (2 \[Phi]''[x] + 3 H[x] \[Phi]'[x] + 
+       Z'[\[Phi][x]]/Z[\[Phi][x]] \[Phi]'[x]^2) \[Alpha][x] + \[Phi]'[
+      x] \[Kappa][x] + 
+    F'[\[Phi][x]]/(
+     2 Z[\[Phi][x]]) \[Delta]R[
+      x]);  (* eq. (55) of gr-qc/0412126v1, set Tc=0 or (4.12) of \
+gr-qc/0009034. *)
+
+eq\[Psi][x_] := (\[Psi][
+      x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+     F[\[Phi][x]]) (-(k^2/a[x]^2) + 3 Derivative[1][H][x]) + 
+  6 H[x] (H[
+       x] (\[Psi][
+         x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+        F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) + 
+  3 ((\[Psi][x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+        F[\[Phi][x]]) Derivative[1][H][x] + 
+     H[x] (-((
+         Derivative[1][F][\[Phi][x]] Derivative[1][\[Delta]\[Phi]][
+           x])/F[\[Phi][x]]) + 
+        Derivative[1][\[Psi]][
+         x] - \[Delta]\[Phi][x] Derivative[1][\[Phi]][
+          x] (-(Derivative[1][F][\[Phi][x]]^2/F[\[Phi][x]]^2) + (
+            F^\[Prime]\[Prime])[\[Phi][x]]/
+           F[\[Phi][x]])) + (\[Psi]^\[Prime]\[Prime])[x]) + 
+  1/2 (2 ((k^2 \[Psi][x])/a[x]^2 + 
+        3 H[x] (H[
+             x] (\[Psi][
+               x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+              F[\[Phi][x]]) + Derivative[1][\[Psi]][x])) - 
+     1/F[\[Phi][
+        x]] 3 (\[Delta]\[Phi][x] Derivative[1][
+          F][\[Phi][x]] ((2 k^2)/(3 a[x]^2) - 3 H[x]^2 - 
+           Derivative[1][H][x]) + 
+        Z[\[Phi][x]] Derivative[1][\[Delta]\[Phi]][x] Derivative[
+          1][\[Phi]][
+          x] - (\[Psi][
+            x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+           F[\[Phi][x]]) (2 Fdd[x] + 2 Fd[x] H[x] + 
+           Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2) + 
+        1/2 \[Delta]\[Phi][
+          x] (6 Derivative[1][
+             F][\[Phi][x]] (2 H[x]^2 + Derivative[1][H][x]) - 
+           2 Derivative[1][U][\[Phi][x]] + 
+           Derivative[1][Z][\[Phi][x]] Derivative[1][\[Phi]][x]^2) - 
+        2 Fd[x] (H[
+             x] (\[Psi][
+               x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+              F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) + 
+        2 Derivative[1][\[Delta]\[Phi]][x] Derivative[1][\[Phi]][x] (
+          F^\[Prime]\[Prime])[\[Phi][x]] + 
+        2 H[x] (Derivative[1][F][\[Phi][x]] Derivative[
+             1][\[Delta]\[Phi]][x] + \[Delta]\[Phi][x] Derivative[
+             1][\[Phi]][x] (F^\[Prime]\[Prime])[\[Phi][x]]) - 
+        Fd[x] (-((
+            Derivative[1][F][\[Phi][x]] Derivative[1][\[Delta]\[Phi]][
+              x])/F[\[Phi][x]]) + 
+           Derivative[1][\[Psi]][
+            x] - \[Delta]\[Phi][x] Derivative[1][\[Phi]][
+             x] (-(Derivative[1][F][\[Phi][x]]^2/F[\[Phi][x]]^2) + (
+               F^\[Prime]\[Prime])[\[Phi][x]]/F[\[Phi][x]])) + 
+        Derivative[1][F][\[Phi][x]] (\[Delta]\[Phi]^\[Prime]\[Prime])[
+          x] + \[Delta]\[Phi][x] (
+          F^\[Prime]\[Prime])[\[Phi][x]] (\[Phi]^\[Prime]\[Prime])[
+          x] + \[Delta]\[Phi][x] Derivative[1][\[Phi]][x]^2 
+\!\(\*SuperscriptBox[\(F\), \*
+TagBox[
+RowBox[{"(", "3", ")"}],
+Derivative],
+MultilineFunction->None]\)[\[Phi][x]]))
+
+eq\[Delta]\[Phi][x_] := 
+ Derivative[1][\[Delta]\[Phi]][
+    x] (3 H[x] + (
+     Derivative[1][Z][\[Phi][x]] Derivative[1][\[Phi]][x])/
+     Z[\[Phi][x]]) - 
+  3 Derivative[1][\[Phi]][
+    x] (H[x] (\[Psi][
+         x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+        F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) - 
+  Derivative[1][\[Phi]][
+    x] (-((Derivative[1][F][\[Phi][x]] Derivative[1][\[Delta]\[Phi]][
+        x])/F[\[Phi][x]]) + (\[Delta]\[Phi][x] Derivative[1][
+       F][\[Phi][x]]^2 Derivative[1][\[Phi]][x])/F[\[Phi][x]]^2 + 
+     Derivative[1][\[Psi]][
+      x] - (\[Delta]\[Phi][x] Derivative[1][\[Phi]][x] (
+       F^\[Prime]\[Prime])[\[Phi][x]])/F[\[Phi][x]]) + \[Delta]\[Phi][
+    x] (k^2/a[x]^2 - (
+     Derivative[1][U][\[Phi][x]] Derivative[1][Z][\[Phi][x]])/
+     Z[\[Phi][x]]^2 - 
+     3 (2 H[x]^2 + 
+        Derivative[1][H][x]) (-((
+         Derivative[1][F][\[Phi][x]] Derivative[1][Z][\[Phi][x]])/
+         Z[\[Phi][x]]^2) + (F^\[Prime]\[Prime])[\[Phi][x]]/
+        Z[\[Phi][x]]) + (U^\[Prime]\[Prime])[\[Phi][x]]/
+     Z[\[Phi][x]] + 
+     1/2 Derivative[1][\[Phi]][
+       x]^2 (-(Derivative[1][Z][\[Phi][x]]^2/Z[\[Phi][x]]^2) + (
+         Z^\[Prime]\[Prime])[\[Phi][x]]/
+        Z[\[Phi][x]])) + (\[Delta]\[Phi]^\[Prime]\[Prime])[
+   x] - (\[Psi][x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+     F[\[Phi][x]]) (3 H[x] Derivative[1][\[Phi]][x] + (
+     Derivative[1][Z][\[Phi][x]] Derivative[1][\[Phi]][x]^2)/
+     Z[\[Phi][x]] + 2 (\[Phi]^\[Prime]\[Prime])[x]) - 
+  1/Z[\[Phi][x]] Derivative[1][
+    F][\[Phi][
+     x]] (-((2 k^2 \[Psi][x])/
+      a[x]^2) - (\[Psi][
+         x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+        F[\[Phi][x]]) (-(k^2/a[x]^2) + 3 Derivative[1][H][x]) - 
+     12 H[x] (H[
+          x] (\[Psi][
+            x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+           F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) - 
+     3 ((\[Psi][x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+           F[\[Phi][x]]) Derivative[1][H][x] + 
+        H[x] (-((
+            Derivative[1][F][\[Phi][x]] Derivative[1][\[Delta]\[Phi]][
+              x])/F[\[Phi][x]]) + 
+           Derivative[1][\[Psi]][
+            x] - \[Delta]\[Phi][x] Derivative[1][\[Phi]][
+             x] (-(Derivative[1][F][\[Phi][x]]^2/F[\[Phi][x]]^2) + (
+               F^\[Prime]\[Prime])[\[Phi][x]]/
+              F[\[Phi][x]])) + (\[Psi]^\[Prime]\[Prime])[x]))
+
+(* Density contrasts *)
+
+\[Delta]\[Mu]2[x_] := 
+  1/F[\[Phi][x]] (Z[\[Phi][x]] \[Phi]'[x] \[Delta]\[Phi]'[x] + 
+     1/2 (Z'[\[Phi][x]] \[Phi]'[x]^2 - f\[Phi][x] + 
+        2 U'[\[Phi][x]]) \[Delta]\[Phi][x] - 
+     3 H[x] \[Delta]Fd[
+       x] + (3 H'[x] + 3 H[x]^2 - k^2/a[x]^2) \[Delta]F[
+       x] + (3 H[x] Fd[x] - Z[\[Phi][x]] \[Phi]'[x]^2) \[Alpha][x] + 
+     Fd[x] \[Kappa][x] + \[Delta]\[Rho]m[x] - \[Delta]F[x]/
+      F[\[Phi][x]] \[Rho]m[x]); 
+
+\[Mu][x_] := 
+  1/F[\[Phi][x]] (1/2 Z[\[Phi][x]] \[Phi]'[x]^2 + U[\[Phi][x]] - 
+     3 H[x] Fd[x] + \[Rho]m[x]);  
+
+Subscript[\[Delta], \[Phi]][
+   x_] = ((\[Delta]\[Mu]2[x] /. {\[Delta]\[Rho]m[x] -> 0})/\[Mu][
+    x]);(* obtain the field density perturbation by considering the \
+full density perturbation \[Delta]\[Mu]2[x] and setting the matter \
+part \[Delta]\[Rho]m[x] to 0. Similarly for the total energy density \
+isolate the field density part by setting  \[Rho]m[x]->0. We \
+normalize over the total energy density *)
+
+Subscript[\[Delta], \[Phi]][
+  x_] := (-((\[Delta]\[Phi][x] \[Rho]m[x] Derivative[1][
+       F][\[Phi][x]])/
+     F[\[Phi][x]]) + \[Delta]\[Phi][x] Derivative[1][
+      F][\[Phi][x]] (-(k^2/a[x]^2) + 3 H[x]^2 + 
+       3 Derivative[1][H][x]) + 
+    Z[\[Phi][x]] Derivative[1][\[Delta]\[Phi]][x] Derivative[
+      1][\[Phi]][
+      x] + (\[Psi][
+        x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+       F[\[Phi][x]]) (3 Fd[x] H[x] - 
+       Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2) + 
+    1/2 \[Delta]\[Phi][
+      x] (-6 Derivative[1][
+         F][\[Phi][x]] (2 H[x]^2 + Derivative[1][H][x]) + 
+       2 Derivative[1][U][\[Phi][x]] + 
+       Derivative[1][Z][\[Phi][x]] Derivative[1][\[Phi]][x]^2) + 
+    3 Fd[x] (H[
+         x] (\[Psi][
+           x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+          F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) - 
+    3 H[x] (Derivative[1][F][\[Phi][x]] Derivative[1][\[Delta]\[Phi]][
+         x] + \[Delta]\[Phi][x] Derivative[1][\[Phi]][x] (
+         F^\[Prime]\[Prime])[\[Phi][x]]))/(-3 Fd[x] H[x] + 
+    U[\[Phi][x]] + \[Rho]m[x] + 
+    1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2)
+
+Subscript[\[Delta], m][
+   x_] = (\[Delta]\[Mu][x] - \[Delta]\[Mu]2[
+     x] /. {\[Delta]\[Rho]m[x] -> 0})/\[Mu][x];
+
+Subscript[\[Delta], m][
+  x_] := (F[\[Phi][
+      x]] (-2 ((k^2 \[Psi][x])/a[x]^2 + 
+         3 H[x] (H[
+              x] (\[Psi][
+                x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+               F[\[Phi][x]]) + Derivative[1][\[Psi]][x])) - 
+      1/F[\[Phi][
+         x]] (-((\[Delta]\[Phi][x] \[Rho]m[x] Derivative[1][
+            F][\[Phi][x]])/
+          F[\[Phi][x]]) + \[Delta]\[Phi][x] Derivative[1][
+           F][\[Phi][x]] (-(k^2/a[x]^2) + 3 H[x]^2 + 
+            3 Derivative[1][H][x]) + 
+         Z[\[Phi][x]] Derivative[1][\[Delta]\[Phi]][x] Derivative[
+           1][\[Phi]][
+           x] + (\[Psi][
+             x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+            F[\[Phi][x]]) (3 Fd[x] H[x] - 
+            Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2) + 
+         1/2 \[Delta]\[Phi][
+           x] (-6 Derivative[1][
+              F][\[Phi][x]] (2 H[x]^2 + Derivative[1][H][x]) + 
+            2 Derivative[1][U][\[Phi][x]] + 
+            Derivative[1][Z][\[Phi][x]] Derivative[1][\[Phi]][x]^2) + 
+         3 Fd[x] (H[
+              x] (\[Psi][
+                x] - (\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]])/
+               F[\[Phi][x]]) + Derivative[1][\[Psi]][x]) - 
+         3 H[x] (Derivative[1][F][\[Phi][x]] Derivative[
+              1][\[Delta]\[Phi]][x] + \[Delta]\[Phi][x] Derivative[
+              1][\[Phi]][x] (
+              F^\[Prime]\[Prime])[\[Phi][x]]))))/(-3 Fd[x] H[x] + 
+    U[\[Phi][x]] + \[Rho]m[x] + 
+    1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2)
+
+(* Subscript[\[Delta], \[Phi]] and Subscript[\[Delta], m] on \
+subhorizon GR scales*)
+
+Subscript[subhGR\[Delta], \[Phi]][
+  x_] := (-Z[\[Phi][x]] \[Psi][x] Derivative[1][\[Phi]][x]^2)/(
+ U[\[Phi][x]] + \[Rho]m[x] + 
+  1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2)
+Subscript[subhGR\[Delta], m][x_] := (-2 ((k^2 \[Psi][x])/a[x]^2))/(
+  U[\[Phi][x]] + \[Rho]m[x] + 
+   1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2);
+
+(* Subscript[\[Delta], \[Phi]] and Subscript[\[Delta], m] on \
+subhorizon ST scales*)
+
+Subscript[subhST\[Delta], \[Phi]][
+  x_] := (-\[Delta]\[Phi][x] Derivative[1][F][\[Phi][x]] k^2/a[x]^2)/(
+ U[\[Phi][x]] + \[Rho]m[x] - 
+  3 H[x] Derivative[1][F][\[Phi][x]] Derivative[1][\[Phi]][x] + 
+  1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2)
+Subscript[subhST\[Delta], m][x_] := (-2 \[Psi][x] F[\[Phi][x]] k^2/
+   a[x]^2)/(
+  U[\[Phi][x]] + \[Rho]m[x] - 
+   3 H[x] Derivative[1][F][\[Phi][x]] Derivative[1][\[Phi]][x] + 
+   1/2 Z[\[Phi][x]] Derivative[1][\[Phi]][x]^2);
+
+(* BACKGROUND SOLUTION for \[CapitalLambda]CDM *)
+
+	(* Fix the theory to \[CapitalLambda]CDM *)
+
+	ST = 0; (* GR corresponds to ST=0 and Scalar-Tensor to ST=1 *)
+	
+Q = 0; (* Quintessence corresponds to Q=1 and LCDM to Q=0 *)
+
+	(* Set parameters *)
+
+	\[Lambda]f = 5.0;
+	\[Lambda] = 2;
+	\[Phi]i = 0.12;
+	Om = 0.3;  (* om=0.3 *)
+	\[Phi]pi = 
+  10^-5;(* initial field velocity. *)
+
+	(* Generates solution *)
+
+(* define a form for F, set Z=1 *)
+Z[\[Phi]_] = 1;
+F[\[Phi]_] = 
+  1 - ST*\[Lambda]f \[Phi]^2;(* from the expansion of F[\[Phi]_]=\
+\[Beta]+(1-\[Beta])Cos[Sqrt[Abs[\[Lambda]f]]\[Phi]]^2 *)
+
+Fd[x_] = F'[\[Phi][x]] \[Phi]'[
+    x];  (* differentiate above eq. with time *)
+
+Fdd[x_] = \[Phi]'[x]^2 F''[\[Phi][x]] + 
+   F'[\[Phi][x]] \[Phi]''[
+     x]; (* differentiate above eq. with time (second derivative) *)
+
+(* define the field potential U *)
+
+U[\[Phi]_] = 1 + Q Exp[-\[Lambda] \[Phi]]; 
+
+zi = 1000;  (* the initial redshift  *)
+xi = (4/(9 Om (1 + zi)^3))^(
+ 1/2) (* initial time to z=1000. This is an initial estimate. After \
+rescaling of the scale factor this will change *); xf = 5; (* final \
+time. estimate for final time taken by guess to be larger than t0 (t0 \
+is the present time defined such that Om(t0)=Om=0.3 *) (* To obtain \
+xi solve Friedmann equation (\dot a/a)^2=h0^2 om0 a^(-3) with initial \
+condition a(0)=0. Then set Href=1 in a(t) and om0=0.3. Href is a \
+reference scale which will be of order H(t0) but not exactly equal to \
+it. Href is the scale by which we rescale the differntial equations \
+to obtain dimensionless time, Hubble parameter, density and \
+potential. Then set 1+z=1001=1/a(ti) to find xi. Put xf=5 which \
+corresponds to a time after today.  *) 
+ai = 1/(1 + 
+   zi); (* initial redshift z=1000. This will change after rescaling \
+of a(t) (see below). *)
+
+H[x_] := a'[x]/
+   a[x]; (* Hubble parameter connection to the scale factor *)
+
+Off[NDSolve::"ndsz"];
+solution = 
+  NDSolve[{F[\[Phi][x]] Z[\[Phi][x]] (\[Phi]''[x] + 
+        3 H[x] \[Phi]'[x]) == 
+     3 F'[\[Phi][
+         x]] ((-(1/
+            2) (\[Rho]m[x] + Z[\[Phi][x]] \[Phi]'[x]^2 + Fdd[x] - 
+             H[x] Fd[x])) + 2 F[\[Phi][x]] H[x]^2) - 
+      F[\[Phi][x]] Z'[\[Phi][x]] \[Phi]'[x]^2/2 - 
+      F[\[Phi][x]] U'[\[Phi][x]], \[Phi]'[xi] == \[Phi]pi,(* 
+    small initial velocity for the field \[Phi]'[xi]=
+    2x10^(-2) *)  \[Phi][xi] == \[Phi]i,(* start with GR *)
+    H[x] == Sqrt[(\[Rho]m[x] + 1/2 Z[\[Phi][x]] \[Phi]'[x]^2 - 
+      3 H[x] Fd[x] + U[\[Phi][x]])/(3 F[\[Phi][x]])](* 
+    backround equation for the metric eq. (4.5a) from gr-qc/
+    0009034v1.*) , a[xi] == ai, \[Rho]m'[x] + 3 H[x] \[Rho]m[x] == 0 (* 
+    use also continuity equation since we have also put \[Rho]m in \
+the unknown functions rather than using the standard \[Rho]m~a[
+    t]^(-3)*), \[Rho]m[xi] == 4/3 xi^-2 (* after setting 8\[Pi]G=1: 
+    Hi^2=(1/3)\[Rho]m=(2/(3 xi))^2, solve for xi. *)}, {\[Phi], 
+    a, \[Rho]m}, {x, xi, xf}, MaxSteps -> Infinity];
+
+	(* Picks up and rescale the well behaved solution *)
+
+sol = 1;
+(* The following commands are used to redefine scale factor so that \
+a(today)=1. This also changes the initial time. see below *)
+
+t0 = xx /. 
+   FindRoot[(\[Rho]m[xx]/(3 H[xx]^2) /. solution[[sol]]) == Om, {xx, 
+     1}]  ;(* find the present time such that the relative matter \
+density is equal to Om. This definition does not secure that a[t0] is \
+necessarily equal to 1. so we rescale a[t] to secure that below. *)
+\
+\[Phi]BG[x_] = \[Phi][x] /. 
+   solution[[sol]]; (* Builds the background solution *)
+
+aBG[x_] = (a[x]/a[t0] /. 
+    solution[[
+     sol]]); (* redefine scale factor so that a[t0]=1 *)
+\[Rho]mBG[
+   x_] = \[Rho]m[x] /. 
+   solution[[
+    sol]];  (* use the solution to find \[Rho]m[t] (remember that the \
+system had three unkown functions the field, the scale factor and the \
+matter density *)
+
+background = {\[Phi] -> \[Phi]BG, 
+   a -> aBG, \[Rho]m -> \[Rho]mBG};  (* construct a rule to use later \
+and avoid assigning the solution values because such an assignment \
+would create problems when multiple runs of the file occur *)
+
+ta[x_] := 
+  t /. FindRoot[
+    aBG[t] == x, {t, xi}]; (* Time as a function of scale factor *)
+
+tz[z_] := t /. FindRoot[1/aBG[t] == 1 + z, {t, xi}]; 
+(* Time as a function of redshift *)
+(* Initial redshift and time *) \
+zzi = 1000; ti = tz[zzi];
+(* initial scale factor *) ai = 1/(1 + zzi);
+(* initial Hubble parameter *) Hi = 2/(3 ti);
+(* Present value Hubble parameter *) H0 = H[t0] /. background;
+
+
+(* Subscript[\[Delta], m0] vs scale in \[CapitalLambda]CDM *)
+
+num = 0;
+Do[num = num + 1;
+ (* perturbation scale *)
+ k = 2 \[Pi] (2.998) 10^(3 - log\[Lambda]p)  H0;
+ solution2 = 
+  NDSolve[{(eq\[Psi][x] /. background) == 0, \[Psi]'[ti] == 
+     0, \[Psi][ti] == 1, (eq\[Delta]\[Phi][x] /. background) == 
+     0, \[Delta]\[Phi]'[ti] == 0, \[Delta]\[Phi][ti] == 
+     0}, {\[Psi], \[Delta]\[Phi]}, {x, ti, t0}, MaxSteps -> Infinity]; 
+ valy[num] = 
+  Abs[(Subscript[\[Delta], m][t0] /. solution2 /. background)[[1]]];
+ valx[num] = log\[Lambda]p
+ , {log\[Lambda]p, 0.5, 6, 0.25}]
+ListPlot[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}], 
+ Frame -> True, Axes -> False, Joined -> True, PlotRange -> All, 
+ FrameLabel -> {"\!\(\*SubscriptBox[\(log\), \(10\)]\) \[Lambda] \
+(\!\(\*SuperscriptBox[\(h\), \(-1\)]\) Mpc)", 
+   "\!\(\*SubscriptBox[\(log\), \(\(10\)\(\\\ \
+\)\)]\)|\!\(\*SubscriptBox[\(\[Delta]\), \(\(m0\)\(\\\ \
+\)\)]\)/\!\(\*SubscriptBox[\(\[Psi]\), \(i\)]\)|"}, 
+ BaseStyle -> mystyle, ImageSize -> 400]
+(* Interpolating function for \[CapitalLambda]CDM *)
+\[Delta]m0lcdm = 
+  Interpolation[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}]];
+
+\!\(\*
+GraphicsBox[{{}, {}, 
+{Hue[0.67, 0.6, 0.6], LineBox[CompressedData["
+1:eJxTTMoPSmViYGAQB2IQDQEP7N8uv5dyhV/WAcJ/Ye8az55zhV8ayv9gH+cj
+WnGFXxLK/2JfKpU96Qq/OJT/w36/3fFXV/hFofw/9jOO+/29yi8M5TM4eJ5f
+HXeTXxDKZ3JY2fFb5IQ8H5TP4uD4PLGfW4ELymdzmJO679IDBTYon8NBL9j0
+ZaMyE5TP5bDDdNu5rvA/9hA+j8PbHRHRF7u+QPl8DhkvN/rtd38F5Qs48Mml
+OHz/fwvKF3R4bVT9NufHQShfyIEzgWnRH/W6/RC+sMPZBVzzbituhPJFHFxD
+klZMzdkG5Ys6eO1d7npEbQeUL+bw+uOVLM4tML64w9cSkQ23H8D4Eg4PsqbN
+53y/Yz8Aio5n3g==
+"]]}},
+AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+AxesOrigin->{1., 0},
+BaseStyle->{FontFamily -> "Times", Plain, FontSize -> 12},
+Frame->True,
+FrameLabel->{
+FormBox["\"\\!\\(\\*SubscriptBox[\\(log\\), \\(10\\)]\\) \[Lambda] \
+(\\!\\(\\*SuperscriptBox[\\(h\\), \\(-1\\)]\\) Mpc)\"", 
+      TraditionalForm], 
+FormBox["\"\\!\\(\\*SubscriptBox[\\(log\\), \\(\\(10\\)\\(\\\\ \
+\\)\\)]\\)|\\!\\(\\*SubscriptBox[\\(\[Delta]\\), \\(\\(m0\\)\\(\\\\ \
+\\)\\)]\\)/\\!\\(\\*SubscriptBox[\\(\[Psi]\\), \\(i\\)]\\)|\"", 
+      TraditionalForm]},
+ImageSize->400,
+PlotRange->{All, All},
+PlotRangeClipping->True,
+PlotRangePadding->{Automatic, Automatic}]\)
+
+(* BACKGROUND SOLUTION for GR *)
+
+	(* Fix the theory to GR *)
+
+	ST = 0; (* GR corresponds to ST=0 and Scalar-Tensor to ST=1 *)
+	
+Q = 1; (* Quintessence corresponds to Q=1 and LCDM to Q=0 *)
+
+	(* Set parameters *)
+
+	\[Lambda]f = 5.0;
+	\[Lambda] = 2;
+	\[Phi]i = 0.12;
+	Om = 0.3;  (* om=0.3 *)
+	\[Phi]pi = 
+  10^-5;(* initial field velocity. *)
+
+	(* Generates solution *)
+
+(* define a form for F, set Z=1 *)
+Z[\[Phi]_] = 1;
+F[\[Phi]_] = 
+  1 - ST*\[Lambda]f \[Phi]^2;(* from the expansion of F[\[Phi]_]=\
+\[Beta]+(1-\[Beta])Cos[Sqrt[Abs[\[Lambda]f]]\[Phi]]^2 *)
+
+Fd[x_] = F'[\[Phi][x]] \[Phi]'[
+    x];  (* differentiate above eq. with time *)
+
+Fdd[x_] = \[Phi]'[x]^2 F''[\[Phi][x]] + 
+   F'[\[Phi][x]] \[Phi]''[
+     x]; (* differentiate above eq. with time (second derivative) *)
+
+(* define the field potential U *)
+
+U[\[Phi]_] = 1 + Q Exp[-\[Lambda] \[Phi]]; 
+
+zi = 1000;  (* the initial redshift  *)
+xi = (4/(9 Om (1 + zi)^3))^(
+ 1/2) (* initial time to z=1000. This is an initial estimate. After \
+rescaling of the scale factor this will change *); xf = 5; (* final \
+time. estimate for final time taken by guess to be larger than t0 (t0 \
+is the present time defined such that Om(t0)=Om=0.3 *) (* To obtain \
+xi solve Friedmann equation (\dot a/a)^2=h0^2 om0 a^(-3) with initial \
+condition a(0)=0. Then set Href=1 in a(t) and om0=0.3. Href is a \
+reference scale which will be of order H(t0) but not exactly equal to \
+it. Href is the scale by which we rescale the differntial equations \
+to obtain dimensionless time, Hubble parameter, density and \
+potential. Then set 1+z=1001=1/a(ti) to find xi. Put xf=5 which \
+corresponds to a time after today.  *) 
+ai = 1/(1 + 
+   zi); (* initial redshift z=1000. This will change after rescaling \
+of a(t) (see below). *)
+
+H[x_] := a'[x]/
+   a[x]; (* Hubble parameter connection to the scale factor *)
+
+Off[NDSolve::"ndsz"];
+solution = 
+  NDSolve[{F[\[Phi][x]] Z[\[Phi][x]] (\[Phi]''[x] + 
+        3 H[x] \[Phi]'[x]) == 
+     3 F'[\[Phi][
+         x]] ((-(1/
+            2) (\[Rho]m[x] + Z[\[Phi][x]] \[Phi]'[x]^2 + Fdd[x] - 
+             H[x] Fd[x])) + 2 F[\[Phi][x]] H[x]^2) - 
+      F[\[Phi][x]] Z'[\[Phi][x]] \[Phi]'[x]^2/2 - 
+      F[\[Phi][x]] U'[\[Phi][x]] \[Phi][xi] == \[Phi]i,(* 
+    start with GR *)
+    H[x] == Sqrt[(\[Rho]m[x] + 1/2 Z[\[Phi][x]] \[Phi]'[x]^2 - 
+      3 H[x] Fd[x] + U[\[Phi][x]])/(3 F[\[Phi][x]])](* 
+    backround equation for the metric eq. (4.5a) from gr-qc/
+    0009034v1.*) , a[xi] == ai, \[Rho]m'[x] + 3 H[x] \[Rho]m[x] == 0 (* 
+    use also continuity equation since we have also put \[Rho]m in \
+the unknown functions rather than using the standard \[Rho]m~a[
+    t]^(-3)*), \[Rho]m[xi] == 4/3 xi^-2 (* after setting 8\[Pi]G=1: 
+    Hi^2=(1/3)\[Rho]m=(2/(3 xi))^2, solve for xi. *)}, {\[Phi], 
+    a, \[Rho]m}, {x, xi, xf}, MaxSteps -> Infinity];
+
+	(* Picks up and rescale the well behaved solution *)
+
+sol = 1;
+(* The following commands are used to redefine scale factor so that \
+a(today)=1. This also changes the initial time. see below *)
+
+t0 = xx /. 
+   FindRoot[(\[Rho]m[xx]/(3 H[xx]^2) /. solution[[sol]]) == Om, {xx, 
+     1}]  ;(* find the present time such that the relative matter \
+density is equal to Om. This definition does not secure that a[t0] is \
+necessarily equal to 1. so we rescale a[t] to secure that below. *)
+\
+\[Phi]BG[x_] = \[Phi][x] /. 
+   solution[[sol]]; (* Builds the background solution *)
+
+aBG[x_] = (a[x]/a[t0] /. 
+    solution[[
+     sol]]); (* redefine scale factor so that a[t0]=1 *)
+\[Rho]mBG[
+   x_] = \[Rho]m[x] /. 
+   solution[[
+    sol]];  (* use the solution to find \[Rho]m[t] (remember that the \
+system had three unkown functions the field, the scale factor and the \
+matter density *)
+
+background = {\[Phi] -> \[Phi]BG, 
+   a -> aBG, \[Rho]m -> \[Rho]mBG};  (* construct a rule to use later \
+and avoid assigning the solution values because such an assignment \
+would create problems when multiple runs of the file occur *)
+
+ta[x_] := 
+  t /. FindRoot[
+    aBG[t] == x, {t, xi}]; (* Time as a function of scale factor *)
+
+tz[z_] := t /. FindRoot[1/aBG[t] == 1 + z, {t, xi}]; 
+(* Time as a function of redshift *)
+(* Initial redshift and time *) \
+zzi = 1000; ti = tz[zzi];
+(* initial scale factor *) ai = 1/(1 + zzi);
+(* initial Hubble parameter *) Hi = 2/(3 ti);
+(* Present value Hubble parameter *) H0 = H[t0] /. background;
+
+
+(* Subscript[\[Delta], m0] vs scale in GR *)
+
+num = 0;
+Do[num = num + 1;
+ (* perturbation scale *)
+ k = 2 \[Pi] (2.998) 10^(3 - log\[Lambda]p)  H0;
+ solution2 = 
+  NDSolve[{(eq\[Psi][x] /. background) == 0, \[Psi]'[ti] == 
+     0, \[Psi][ti] == 1, (eq\[Delta]\[Phi][x] /. background) == 
+     0, \[Delta]\[Phi]'[ti] == 0, \[Delta]\[Phi][ti] == 
+     0}, {\[Psi], \[Delta]\[Phi]}, {x, ti, t0}, MaxSteps -> Infinity]; 
+ valy[num] = 
+  Abs[(Subscript[\[Delta], m][t0] /. solution2 /. background)[[1]]];
+ valx[num] = log\[Lambda]p
+ , {log\[Lambda]p, 0.5, 6, 0.25}]
+ListPlot[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}], 
+ Frame -> True, Axes -> False, Joined -> True, PlotRange -> All, 
+ FrameLabel -> {"\!\(\*SubscriptBox[\(log\), \(10\)]\) \[Lambda] \
+(\!\(\*SuperscriptBox[\(h\), \(-1\)]\) Mpc)", 
+   "\!\(\*SubscriptBox[\(log\), \(\(10\)\(\\\ \
+\)\)]\)|\!\(\*SubscriptBox[\(\[Delta]\), \(\(m0\)\(\\\ \
+\)\)]\)/\!\(\*SubscriptBox[\(\[Psi]\), \(i\)]\)|"}, 
+ BaseStyle -> mystyle, ImageSize -> 400]
+(* Interpolating function for GR *)
+\[Delta]m0mcq = 
+  Interpolation[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}]];
+
+(* BACKGROUND SOLUTION for ST*)
+
+	(* Fix the theory to ST *)
+
+	ST = 1; (* GR corresponds to ST=0 and Scalar-Tensor to ST=1 *)
+	
+Q = 1; (* Quintessence corresponds to Q=1 and LCDM to Q=0 *)
+
+	(* Set parameters *)
+
+	\[Lambda]f = 5.0;
+	\[Lambda] = 2;
+	\[Phi]i = 0.12;
+	Om = 0.3;  (* om=0.3 *)
+	\[Phi]pi = 
+  10^-5;(* initial field velocity. *)
+
+	(* Generates solution *)
+
+(* define a form for F, set Z=1 *)
+Z[\[Phi]_] = 1;
+F[\[Phi]_] = 
+  1 - ST*\[Lambda]f \[Phi]^2;(* from the expansion of F[\[Phi]_]=\
+\[Beta]+(1-\[Beta])Cos[Sqrt[Abs[\[Lambda]f]]\[Phi]]^2 *)
+
+Fd[x_] = F'[\[Phi][x]] \[Phi]'[
+    x];  (* differentiate above eq. with time *)
+
+Fdd[x_] = \[Phi]'[x]^2 F''[\[Phi][x]] + 
+   F'[\[Phi][x]] \[Phi]''[
+     x]; (* differentiate above eq. with time (second derivative) *)
+
+(* define the field potential U *)
+
+U[\[Phi]_] = 1 + Q Exp[-\[Lambda] \[Phi]]; 
+
+zi = 1000;  (* the initial redshift  *)
+xi = (4/(9 Om (1 + zi)^3))^(
+ 1/2) 
+ai = 1/(1 + zi); 
+H[x_] := a'[x]/
+  a[x]; (* Hubble parameter connection to the scale factor *)
+Off[
+ NDSolve::"ndsz"];
+solution = 
+  NDSolve[{F[\[Phi][x]] Z[\[Phi][x]] (\[Phi]''[x] + 
+        3 H[x] \[Phi]'[x]) == 
+     3 F'[\[Phi][
+         x]] ((-(1/
+            2) (\[Rho]m[x] + Z[\[Phi][x]] \[Phi]'[x]^2 + Fdd[x] - 
+             H[x] Fd[x])) + 2 F[\[Phi][x]] H[x]^2) - 
+      F[\[Phi][x]] Z'[\[Phi][x]] \[Phi]'[x]^2/2 - 
+      F[\[Phi][x]] U'[\[Phi][x]],  \[Phi][xi] == \[Phi]i, 
+    H[x] == Sqrt[(\[Rho]m[x] + 1/2 Z[\[Phi][x]] \[Phi]'[x]^2 - 
+      3 H[x] Fd[x] + U[\[Phi][x]])/(3 F[\[Phi][x]])] , 
+    a[xi] == ai, \[Rho]m'[x] + 3 H[x] \[Rho]m[x] == 0 , \[Rho]m[xi] ==
+      4/3 xi^-2 }, {\[Phi], a, \[Rho]m}, {x, xi, xf}, 
+   MaxSteps -> Infinity];
+
+	(* Picks up and rescale the well behaved solution *)
+
+sol = 1;
+(* The following commands are used to redefine scale factor so that \
+a(today)=1. This also changes the initial time. see below *)
+
+t0 = xx /. 
+   FindRoot[(\[Rho]m[xx]/(3 H[xx]^2) /. solution[[sol]]) == Om, {xx, 
+     1}]  ;(* find the present time such that the relative matter \
+density is equal to Om. This definition does not secure that a[t0] is \
+necessarily equal to 1. so we rescale a[t] to secure that below. *)
+\
+\[Phi]BG[x_] = \[Phi][x] /. 
+   solution[[sol]]; (* Builds the background solution *)
+
+aBG[x_] = (a[x]/a[t0] /. 
+    solution[[
+     sol]]); (* redefine scale factor so that a[t0]=1 *)
+\[Rho]mBG[
+   x_] = \[Rho]m[x] /. 
+   solution[[
+    sol]];  (* use the solution to find \[Rho]m[t] (remember that the \
+system had three unkown functions the field, the scale factor and the \
+matter density *)
+
+background = {\[Phi] -> \[Phi]BG, 
+   a -> aBG, \[Rho]m -> \[Rho]mBG};  (* construct a rule to use later \
+and avoid assigning the solution values because such an assignment \
+would create problems when multiple runs of the file occur *)
+
+ta[x_] := 
+  t /. FindRoot[
+    aBG[t] == x, {t, xi}]; (* Time as a function of scale factor *)
+
+tz[z_] := t /. FindRoot[1/aBG[t] == 1 + z, {t, xi}]; 
+(* Time as a function of redshift *)
+(* Initial redshift and time *) \
+zzi = 1000; ti = tz[zzi];
+(* initial scale factor *) ai = 1/(1 + zzi);
+(* initial Hubble parameter *) Hi = 2/(3 ti);
+(* Present value Hubble parameter *) H0 = H[t0] /. background;
+
+
+(* Subscript[\[Delta], m0] vs scale in ST *)
+
+num = 0;
+Do[num = num + 1;
+ (* perturbation scale *)
+ k = 2 \[Pi] (2.998) 10^(3 - log\[Lambda]p)  H0;
+ solution2 = 
+  NDSolve[{(eq\[Psi][x] /. background) == 0, \[Psi]'[ti] == 
+     0, \[Psi][ti] == 1, (eq\[Delta]\[Phi][x] /. background) == 
+     0, \[Delta]\[Phi]'[ti] == 0, \[Delta]\[Phi][ti] == 
+     0}, {\[Psi], \[Delta]\[Phi]}, {x, ti, t0}, MaxSteps -> Infinity]; 
+ valy[num] = 
+  Abs[(Subscript[\[Delta], m][t0] /. solution2 /. background)[[1]]];
+ valx[num] = log\[Lambda]p
+ , {log\[Lambda]p, 0.5, 6, 0.25}]
+ListPlot[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}], 
+ Frame -> True, Axes -> False, Joined -> True, PlotRange -> All, 
+ FrameLabel -> {"\!\(\*SubscriptBox[\(log\), \(10\)]\) \[Lambda] \
+(\!\(\*SuperscriptBox[\(h\), \(-1\)]\) Mpc)", 
+   "\!\(\*SubscriptBox[\(log\), \(\(10\)\(\\\ \
+\)\)]\)|\!\(\*SubscriptBox[\(\[Delta]\), \(\(m0\)\(\\\ \
+\)\)]\)/\!\(\*SubscriptBox[\(\[Psi]\), \(i\)]\)|"}, 
+ BaseStyle -> mystyle, ImageSize -> 400]
+(* Interpolating function for ST *)
+\[Delta]m0nmcq = 
+  Interpolation[Table[{valx[j], Log[10, valy[j]]}, {j, 1, num}]];
+
+p0 = Plot[\[Delta]m0lcdm[x], {x, 0.5, 6}, Frame -> True, 
+   Axes -> False, PlotRange -> All, 
+   FrameLabel -> {"\!\(\*SubscriptBox[\(log\), \(10\)]\) \
+\!\(\*SubscriptBox[\(\[Lambda]\), \
+\(p\)]\)(\!\(\*SuperscriptBox[\(h\), \(-1\)]\) Mpc)", 
+     "\!\(\*SubscriptBox[\(log\), \(10\)]\) |(\!\(\*SubscriptBox[\(\
+\[Delta]\), \(m0\)]\)\!\(\*SubscriptBox[\()\), \
+\(\[CapitalLambda]CDM\)]\)/\!\(\*SubscriptBox[\(\[Psi]\), \(i\)]\)|"},
+    BaseStyle -> mystyle, ImageSize -> 400, PlotStyle -> Black];
+p1 = Plot[{10^(\[Delta]m0mcq[x] - \[Delta]m0lcdm[x]), 
+    10^(\[Delta]m0nmcq[x] - \[Delta]m0lcdm[x]), 1}, {x, 0.5, 6}, 
+   Frame -> True, Axes -> False, PlotRange -> All, 
+   FrameLabel -> {"\!\(\*SubscriptBox[\(log\), \(10\)]\) \
+\!\(\*SubscriptBox[\(\[Lambda]\), \(p\)]\) \
+(\!\(\*SuperscriptBox[\(h\), \(-1\)]\) Mpc)", 
+     "\!\(\*SubscriptBox[\(\[Delta]\), \(m0\)]\)/(\!\(\*SubscriptBox[\
+\(\[Delta]\), \(m0\)]\)\!\(\*SuperscriptBox[SubscriptBox[\()\), \(\
+\[CapitalLambda]CDM\)], \(\\\ \)]\)"}, 
+   PlotStyle -> {{Black, Thin}, {Black, Dashed}, {Black, Dotted, 
+      Thickness[0.005]}}, BaseStyle -> mystyle, ImageSize -> 400];
+Show[GraphicsArray[{{p0}, {p1}}]]
