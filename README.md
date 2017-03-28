@@ -1,4 +1,4 @@
-# DE_perturbations
+# Research Project: DE_perturbations
 Linear perturbation in Dark Energy models
 [Created by C. Escamilla-Rivera 2016]
 You are free to use, distribute, and modify this code, as long as you cite the respective papers/references:
